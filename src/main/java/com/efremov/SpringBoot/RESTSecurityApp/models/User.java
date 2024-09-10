@@ -21,6 +21,8 @@ public class User {
     private Byte age;
     @Column(name="city")
     private String city;
+    @Column(name="password")
+    private String password;
 
     public User(String name, Byte age, String city) {
         this.name = name;
