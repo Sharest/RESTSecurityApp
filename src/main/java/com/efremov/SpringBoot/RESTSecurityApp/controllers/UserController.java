@@ -19,38 +19,41 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
     //Can use Hibernate Validator for exception on input data and not null.
     @PostMapping("/createUser")
-    public ResponseEntity<HttpStatus> createUser(@RequestBody User user) {
+    public ResponseEntity<Void> createUser(@RequestBody User user) {
         userService.createUser(user.getName(), user.getAge(), user.getCity());
-        return ResponseEntity.ok(HttpStatus.CREATED);
+        return ResponseEntity.ok().build();
     }
 
     //How does this work with RequestParam? Exception on Long type id.
     @PostMapping("/updateUser/{id}")
-    public ResponseEntity<HttpStatus> updateUser(@PathVariable("id") Long id, @RequestBody User updateUser) {
+    public ResponseEntity<Void> updateUser(@PathVariable("id") Long id, @RequestBody User updateUser) {
         userService.updateUser(id, updateUser);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
+
     @DeleteMapping("/delete")
-    public ResponseEntity<HttpStatus> deleteUser(@RequestParam("id") Long id) {
+    public ResponseEntity<Void> deleteUser(@RequestParam("id") Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
+
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable("id") Long id) {
-        return userService.getUserById(id);
+    public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @GetMapping()
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @ExceptionHandler
     private ResponseEntity<UserErrorResponse> handleException(UserNotFoundException exception) {
         UserErrorResponse response = new UserErrorResponse("User not found");
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
 }
