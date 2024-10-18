@@ -1,15 +1,14 @@
 package com.efremov.SpringBoot.RESTSecurityApp.services;
 
 import com.efremov.SpringBoot.RESTSecurityApp.models.User;
-import org.springframework.web.bind.annotation.ModelAttribute;
-
-import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserCRUD {
-    void createUser(String name, byte age, String city);
+    String registerUser(User user);
     void updateUser(long id, User updateUser);
     void deleteUser(Long id);
-    User getUserById(Long id);
-    List<User> getAllUsers();
+    User getMe();
+    String auth();
 
 }

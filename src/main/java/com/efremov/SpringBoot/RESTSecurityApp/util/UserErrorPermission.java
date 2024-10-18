@@ -5,10 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserErrorResponse {
+public class UserErrorPermission extends Throwable {
     private String message;
 
-    public UserErrorResponse(String message) {
+    public UserErrorPermission(String message) {
         this.message = message;
     }
 }
