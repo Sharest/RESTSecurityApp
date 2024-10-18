@@ -47,7 +47,8 @@ public class PostServiceClient {
 
     public PostResponse updatePost(long id, String title, String content) throws UserErrorPermission {
         Long myId = userService.getMe().getId();
-        if (id != myId) {
+        Long idPostAuthor = getByIdPost(id).getIdAuthor();
+        if (idPostAuthor != myId) {
             throw new UserErrorPermission("You don't have permission");
         } else {
             UpdatePostRequest request = UpdatePostRequest.newBuilder()
@@ -62,13 +63,15 @@ public class PostServiceClient {
 
     public PostResponse deletePost(long id) throws UserErrorPermission {
         Long myId = userService.getMe().getId();
-        if (id != myId) {
+        Long idPostAuthor = getByIdPost(id).getIdAuthor();
+        if (idPostAuthor != myId) {
             throw new UserErrorPermission("You don't have permission");
 
         } else {
             DeletePostRequest request = DeletePostRequest.newBuilder()
                     .setId(id)
                     .build();
+
             return postServerBlockingStub.deletePost(request);
         }
     }
