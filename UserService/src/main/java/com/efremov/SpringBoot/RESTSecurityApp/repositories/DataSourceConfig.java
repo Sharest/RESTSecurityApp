@@ -1,20 +1,25 @@
-package repositories;
+package com.efremov.SpringBoot.RESTSecurityApp.repositories;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
+@Configuration
 public class DataSourceConfig {
+
     @Bean
     @Primary
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://StatServiceDB:5432/StatService");
+        dataSource.setUrl("jdbc:postgresql://UserServiceDB:5432/UserService");
         dataSource.setUsername("postgres");
         dataSource.setPassword("postgres");
         return dataSource;
     }
+
+
 }

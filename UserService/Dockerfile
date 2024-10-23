@@ -7,5 +7,5 @@ RUN mvn clean package -DskipTests
 
 FROM amazoncorretto:21
 COPY --from=build /app/target/*.jar application.jar
-EXPOSE 8084
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "application.jar"]

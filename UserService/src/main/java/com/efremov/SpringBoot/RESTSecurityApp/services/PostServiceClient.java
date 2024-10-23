@@ -14,7 +14,7 @@ public class PostServiceClient {
 
     public PostServiceClient(UserService userService) {
         this.userService = userService;
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("PostService", 9090).usePlaintext().build();
 
         postServerBlockingStub = grpc.PostServerGrpc.newBlockingStub(channel);
     }
