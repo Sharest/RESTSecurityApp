@@ -1,0 +1,110 @@
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
+  kafka-data:
+    driver: local
+
+
+services:
+  postservice:
+    build:
+      context: ./PostService
+      dockerfile: Dockerfile
+    networks:
+      - app
+    depends_on:
+      - PostServiceDB
+    ports:
+      - '8082:8082'
+      - '9090:9090'
+
+  userservice:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+    networks:
+      - app
+    depends_on:
+      - UserServiceDB
+      - postservice
+    ports:
+      - '8080:8080'
+
+  statservice:
+    build:
+      context: ./StatService
+      dockerfile: Dockerfile
+    networks:
+      - app
+    depends_on:
+      - StatServiceDB
+    ports:
+      - '8083:8083'
+      - '9091:9091'
+      
+
+  PostServiceDB:
+    image: 'postgres:latest'
+    networks:
+      - app
+    environment:
+      - 'POSTGRES_DB=PostService'
+      - 'POSTGRES_PASSWORD=postgres'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '5433:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/PostService
+
+  UserServiceDB:
+    image: 'postgres:latest'
+    networks:
+      - app
+    environment:
+      - 'POSTGRES_DB=UserService'
+      - 'POSTGRES_PASSWORD=postgres'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/UserService
+
+  StatServiceDB:
+    image: 'postgres:latest'
+    networks:
+      - app
+    environment:
+      - 'POSTGRES_DB=StatService'
+      - 'POSTGRES_PASSWORD=postgres'
+      - 'POSTGRES_USER=postgres'
+    ports:
+      - '5434:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/StatService
+
+  statservicekafka:
+    image: bitnami/kafka:latest
+    ports:
+      - '9092:9092'
+    depends_on:
+      - userservice
+    networks:
+      - app
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_KRAFT_CLUSTER_ID=STATSERVICECLUSTER
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@statservicekafka:9092
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9093,CONTROLLER://:9092, EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://statservicekafka:9093,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT, EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    volumes:
+      - kafka-data:/var/lib/kafka/StatService

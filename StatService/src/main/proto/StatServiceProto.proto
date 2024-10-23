@@ -1,0 +1,7 @@
+syntax = "proto3";
+package grpc;
+
+service PostServer{
+//  rpc CreatePost() returns ();
+
+}
